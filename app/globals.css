@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Сдержанная палитра: фон + 1-2 акцента (спека §0). «Радугу» дают фото шаров, не UI. */
+@theme {
+  --color-background: oklch(0.99 0.005 95);
+  --color-foreground: oklch(0.22 0.02 280);
+  --color-muted: oklch(0.96 0.008 95);
+  --color-muted-foreground: oklch(0.5 0.02 280);
+  --color-accent: oklch(0.62 0.18 12); /* тёплый коралл — основной акцент */
+  --color-accent-foreground: oklch(0.99 0.005 95);
+  --color-border: oklch(0.9 0.01 280);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --radius: 0.75rem;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+}
