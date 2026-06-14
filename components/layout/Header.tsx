@@ -3,6 +3,7 @@ import { getMegaMenu } from "@/lib/shop/api";
 import { CartDrawer } from "@/components/layout/CartDrawer";
 import { MegaMenu } from "@/components/layout/MegaMenu";
 import { ZoneSelector } from "@/components/layout/ZoneSelector";
+import { SearchPreview } from "@/components/layout/SearchPreview";
 
 /** Шапка (Server). Композирует клиентские острова: MegaMenu, ZoneSelector, CartDrawer. */
 export async function Header() {
@@ -27,15 +28,10 @@ export async function Header() {
           >
             Готовые наборы
           </Link>
-          <Link
-            href="/search"
-            className="rounded-[var(--radius)] px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            Поиск
-          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <SearchPreview />
           <ZoneSelector />
           <CartDrawer />
         </div>

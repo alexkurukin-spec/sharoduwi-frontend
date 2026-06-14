@@ -44,12 +44,12 @@ export function HeroBalloons() {
         )}
       </div>
 
-      <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 py-28 sm:py-36">
+      <div className="mx-auto flex min-h-[88dvh] max-w-6xl flex-col items-start justify-center gap-6 px-6 py-24">
         <p className="text-sm font-medium uppercase tracking-widest text-accent">
-          Sharoduwi
+          Sharoduwi · доставка в день заказа
         </p>
-        <h1 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
-          Гелиевые шары и композиции с доставкой в день заказа
+        <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-7xl">
+          Шары для вашего <span className="text-accent">праздника</span>
         </h1>
         <p className="max-w-xl text-lg text-muted-foreground">
           Готовые наборы на выписку и рождение — в пару кликов. Юго-восток
@@ -64,6 +64,22 @@ export function HeroBalloons() {
               Весь каталог
             </Button>
           </Link>
+        </div>
+        {/* Быстрые подсказки по поводу */}
+        <div className="mt-2 flex flex-wrap gap-2">
+          {[
+            { slug: "den-rozhdeniya", title: "День рождения" },
+            { slug: "svadba", title: "Свадьба" },
+            { slug: "gender-party", title: "Гендер-пати" },
+          ].map((p) => (
+            <Link
+              key={p.slug}
+              href={`/povod/${p.slug}`}
+              className="rounded-full border border-border bg-background/70 px-4 py-1.5 text-sm backdrop-blur transition-colors hover:bg-background"
+            >
+              {p.title}
+            </Link>
+          ))}
         </div>
       </div>
     </section>
