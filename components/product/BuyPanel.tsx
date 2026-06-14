@@ -57,6 +57,7 @@ export function BuyPanel({ product }: { product: Product }) {
         image: product.images[0] ?? "/placeholder.svg",
         price,
         options: selected,
+        fulfillment: product.fulfillment,
       },
       1,
     );

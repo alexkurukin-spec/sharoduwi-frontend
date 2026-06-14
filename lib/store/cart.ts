@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import type { Fulfillment } from "@/lib/shop/types";
 
 /** Строка корзины. key — ключ дедупликации (спека §4). */
 export type CartLine = {
@@ -11,6 +12,7 @@ export type CartLine = {
   price: number;
   qty: number;
   options: Record<string, string>;
+  fulfillment: Fulfillment; // нужно чекауту: pickup_only → только самовывоз
 };
 
 type CartStore = {
@@ -72,3 +74,11 @@ export const useCartStore = create<CartStore>()(
 /** Селектор: суммарное количество единиц в корзине (для бейджа). */
 export const selectCartCount = (state: CartStore): number =>
   state.lines.reduce((sum, l) => sum + l.qty, 0);
+
+/** Селектор: сумма корзины в рублях. */
+export const selectCartTotal = (state: CartStore): number =>
+  state.lines.reduce((sum, l) => sum + l.price * l.qty, 0);
+
+/** Селектор: есть ли в корзине товары «только самовывоз» (пиротехника). */
+export const selectHasPickupOnly = (state: CartStore): boolean =>
+  state.lines.some((l) => l.fulfillment === "pickup_only");

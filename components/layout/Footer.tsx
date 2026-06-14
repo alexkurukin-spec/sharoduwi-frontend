@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { POVODS } from "@/lib/shop/povods";
-
-// Две точки выдачи в Жуковском (спека §2).
-const POINTS = [
-  { title: "Жуковский, ул. Гагарина, 1", hours: "Пн–Вс 9:00–21:00" },
-  { title: "Жуковский, ул. Чкалова, 20", hours: "Пн–Вс 10:00–20:00" },
-];
+import { PICKUP_POINTS } from "@/lib/shop/pickup";
 
 /** Подвал (Server). */
 export function Footer() {
@@ -24,8 +19,8 @@ export function Footer() {
         <div>
           <p className="text-sm font-semibold">Точки выдачи</p>
           <ul className="mt-3 grid gap-3">
-            {POINTS.map((p) => (
-              <li key={p.title} className="flex gap-2 text-sm text-muted-foreground">
+            {PICKUP_POINTS.map((p) => (
+              <li key={p.id} className="flex gap-2 text-sm text-muted-foreground">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                 <span>
                   {p.title}
