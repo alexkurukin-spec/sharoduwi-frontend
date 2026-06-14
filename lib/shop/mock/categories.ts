@@ -1,32 +1,32 @@
-import type { Category } from "@/lib/shop/types";
+import type { AdvantCategoryRaw } from "@/lib/validation/api";
 
 /**
- * Мок-каталог (фаза 0): 3 категории верхнего уровня.
- * В фазе 1 источник переключается флагом USE_MOCKS на реальный REST.
+ * Мок-каталог в «сырой» форме AdvantShop (фаза 1): 3 категории верхнего уровня.
+ * Источник переключается флагом USE_MOCKS на реальный REST; форму знает только адаптер.
  */
 export const mockCategories = [
   {
     id: "cat-balloons",
-    slug: "gelievye-shary",
-    title: "Гелиевые шары",
+    url: "gelievye-shary",
+    name: "Гелиевые шары",
     parentId: null,
-    image: "/mock/cat-balloons.jpg",
+    imageUrl: "/mock/cat-balloons.jpg",
     childrenIds: [],
   },
   {
     id: "cat-bundles",
-    slug: "gotovye-nabory",
-    title: "Готовые наборы",
+    url: "gotovye-nabory",
+    name: "Готовые наборы",
     parentId: null,
-    image: "/mock/cat-bundles.jpg",
+    imageUrl: "/mock/cat-bundles.jpg",
     childrenIds: [],
   },
   {
     id: "cat-pyro",
-    slug: "pirotehnika",
-    title: "Пиротехника",
+    url: "pirotehnika",
+    name: "Пиротехника",
     parentId: null,
-    image: "/mock/cat-pyro.jpg",
+    imageUrl: "/mock/cat-pyro.jpg",
     childrenIds: [],
   },
-] as const satisfies readonly Category[];
+] as const satisfies readonly AdvantCategoryRaw[];

@@ -1,15 +1,12 @@
-import type {
-  Fulfillment,
-  Product,
-  ProductBadge,
-  ProductKind,
-} from "@/lib/shop/types";
+import type { AdvantProductRaw } from "@/lib/validation/api";
 
-const COLOR_OPTION = {
-  name: "Цвет",
-  values: ["Белый", "Розовый", "Голубой", "Золотой", "Красный"],
-};
-const SIZE_OPTION = { name: "Размер", values: ["S", "M", "L"] };
+type Badge = "hit" | "new" | "sale";
+type Kind = "single" | "bundle";
+type Fulfillment = "inflated" | "flat" | "pickup_only";
+type Offer = AdvantProductRaw["offers"][number];
+
+const COLORS = ["Белый", "Розовый", "Голубой", "Золотой", "Красный"] as const;
+const SIZES = ["S", "M", "L"] as const;
 
 type MakeInput = {
   slug: string;
@@ -17,9 +14,9 @@ type MakeInput = {
   categoryId: string;
   basePrice: number;
   oldPrice?: number;
-  kind?: ProductKind;
+  kind?: Kind;
   fulfillment?: Fulfillment;
-  badges?: ProductBadge[];
+  badges?: Badge[];
   povod?: string[];
   color?: string[];
   size?: string[];
@@ -28,46 +25,47 @@ type MakeInput = {
 
 let seq = 0;
 
-/** Фабрика мок-товара. Держит структуру строго в рамках доменного Product. */
-function make(input: MakeInput): Product {
+/** Фабрика мок-товара в «сырой» форме AdvantShop. */
+function make(input: MakeInput): AdvantProductRaw {
   seq += 1;
   const id = `p-${String(seq).padStart(3, "0")}`;
   const kind = input.kind ?? "single";
   const fulfillment = input.fulfillment ?? "inflated";
   const withVariants = input.withVariants ?? kind === "single";
 
-  const options = withVariants ? [COLOR_OPTION, SIZE_OPTION] : [];
-  const variants = withVariants
-    ? COLOR_OPTION.values.flatMap((c) =>
-        SIZE_OPTION.values.map((s, i) => ({
+  const offers: Offer[] = withVariants
+    ? COLORS.flatMap((c) =>
+        SIZES.map((s, i) => ({
           id: `${id}-${c}-${s}`,
-          options: { Цвет: c, Размер: s },
           price: input.basePrice + i * 200,
-          inStock: true,
+          amount: 25,
+          selectedOptions: [
+            { name: "Цвет", value: c },
+            { name: "Размер", value: s },
+          ],
         })),
       )
     : [
         {
           id: `${id}-default`,
-          options: {},
           price: input.basePrice,
-          inStock: true,
+          amount: 25,
+          selectedOptions: [],
         },
       ];
 
   return {
     id,
-    slug: input.slug,
-    title: input.title,
+    url: input.slug,
+    name: input.title,
     description: `${input.title} — праздничное оформление от Sharoduwi. Доставка в день заказа по юго-востоку МО.`,
-    categoryId: input.categoryId,
-    images: [`/mock/${input.slug}-1.jpg`, `/mock/${input.slug}-2.jpg`],
-    basePrice: input.basePrice,
+    parentCategoryId: input.categoryId,
+    pictures: [`/mock/${input.slug}-1.jpg`, `/mock/${input.slug}-2.jpg`],
+    price: input.basePrice,
     ...(input.oldPrice !== undefined ? { oldPrice: input.oldPrice } : {}),
-    options,
-    variants,
+    offers,
     badges: input.badges ?? [],
-    kind,
+    productKind: kind,
     fulfillment,
     facets: {
       povod: input.povod ?? [],
@@ -77,8 +75,8 @@ function make(input: MakeInput): Product {
   };
 }
 
-/** Мок-товары (фаза 0): ~30 позиций по 3 категориям. */
-export const mockProducts: Product[] = [
+/** Мок-товары (фаза 1) в «сырой» форме: ~30 позиций по 3 категориям. */
+export const mockProducts: AdvantProductRaw[] = [
   // — Гелиевые шары (single, inflated) —
   make({ slug: "shar-serdce-krasnoe", title: "Шар «Сердце» красное", categoryId: "cat-balloons", basePrice: 290, badges: ["hit"], povod: ["lyubov", "den-rozhdeniya"], color: ["Красный"], size: ["M"] }),
   make({ slug: "shar-zvezda-zolotaya", title: "Шар «Звезда» золотая", categoryId: "cat-balloons", basePrice: 320, povod: ["den-rozhdeniya"], color: ["Золотой"], size: ["M"] }),
@@ -91,7 +89,7 @@ export const mockProducts: Product[] = [
   make({ slug: "shar-bukvy-name", title: "Имя из фольги (буква)", categoryId: "cat-balloons", basePrice: 350, color: ["Золотой", "Розовый"], size: ["M"] }),
   make({ slug: "shar-mishka", title: "Ходячая фигура «Мишка»", categoryId: "cat-balloons", basePrice: 1290, badges: ["new"], povod: ["vypiska", "rozhdenie"], color: ["Голубой"], size: ["L"] }),
   make({ slug: "shar-zvezdy-nabor", title: "Звёзды металлик (7 шт)", categoryId: "cat-balloons", basePrice: 560, color: ["Золотой"], size: ["S"] }),
-  make({ slug: "shar-bday-set", title: "Набор «С днём рождения»", categoryId: "cat-balloons", basePrice: 880, povod: ["den-rozhdeniya"], color: ["Красный", "Золотой"], size: ["M"] }),
+  make({ slug: "shar-bday-set", title: "Набор шаров «С днём рождения»", categoryId: "cat-balloons", basePrice: 880, povod: ["den-rozhdeniya"], color: ["Красный", "Золотой"], size: ["M"] }),
 
   // — Готовые наборы (bundle, inflated, конфигуратор свёрнут) —
   make({ slug: "nabor-vypiska-malchik", title: "Набор «Выписка — мальчик»", categoryId: "cat-bundles", basePrice: 3490, badges: ["hit"], kind: "bundle", withVariants: false, povod: ["vypiska", "rozhdenie"], color: ["Голубой"], size: ["L"] }),
