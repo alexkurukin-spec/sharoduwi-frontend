@@ -42,7 +42,7 @@ export default async function CategoryPage({
   const isPyro = items.length > 0 && items.every((p) => p.fulfillment === "pickup_only");
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main data-category={category.slug} className="mx-auto max-w-6xl px-6 py-10">
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Главная", url: env.NEXT_PUBLIC_SITE_URL },
@@ -56,12 +56,11 @@ export default async function CategoryPage({
           Главная
         </Link>
         <span className="px-1.5">/</span>
-        <span className="text-foreground">{category.title}</span>
+        <span className="text-category">{category.title}</span>
       </nav>
 
-      <h1 className="mb-8 text-3xl font-semibold tracking-tight">
-        {category.title}
-      </h1>
+      <h1 className="text-4xl font-bold tracking-tight">{category.title}</h1>
+      <div className="mb-8 mt-3 h-1.5 w-16 rounded-full bg-category" />
 
       <CatalogView products={items} />
     </main>

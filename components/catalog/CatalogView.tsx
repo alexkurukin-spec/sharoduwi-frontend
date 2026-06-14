@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import {
   Sheet,
@@ -11,17 +11,16 @@ import {
 } from "@/components/ui/sheet";
 import { FilterPanel } from "@/components/catalog/FilterPanel";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
-import { Pagination } from "@/components/catalog/Pagination";
 import { SortSelect } from "@/components/catalog/SortSelect";
 import { useFilters } from "@/lib/hooks/useFilters";
 import { applyFilters, getAvailableFacets } from "@/lib/shop/filters";
 import type { Product } from "@/lib/shop/types";
 
-const PER_PAGE = 48; // спека §6
+const PAGE = 48; // шаг подгрузки (спека §6)
 
 /**
- * Каталог категории (спека §8): RSC отдаёт весь набор один раз,
- * фильтрация и пагинация — на клиенте через useMemo (shallow, без джанка).
+ * Каталог категории (аддон): RSC отдаёт весь набор один раз; фильтрация — useMemo,
+ * подгрузка — infinite scroll через IntersectionObserver (не кнопка «ещё»).
  */
 export function CatalogView({ products }: { products: Product[] }) {
   const [filters, setFilters] = useFilters();
@@ -32,20 +31,33 @@ export function CatalogView({ products }: { products: Product[] }) {
     [products, filters],
   );
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const page = Math.min(filters.page, totalPages);
-  const pageItems = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const [visible, setVisible] = useState(PAGE);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  const goToPage = (p: number) => {
-    void setFilters({ page: p });
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  // Сброс при смене фильтров/сортировки.
+  useEffect(() => {
+    setVisible(PAGE);
+  }, [filters.povod, filters.color, filters.size, filters.min, filters.max, filters.sort]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisible((v) => Math.min(v + PAGE, filtered.length));
+        }
+      },
+      { rootMargin: "600px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [filtered.length]);
+
+  const pageItems = filtered.slice(0, visible);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
-      {/* Сайдбар фильтров (десктоп) */}
       <aside className="hidden lg:block">
         <FilterPanel
           facets={facets}
@@ -57,11 +69,8 @@ export function CatalogView({ products }: { products: Product[] }) {
 
       <div>
         <div className="mb-6 flex items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            Найдено: {filtered.length}
-          </p>
+          <p className="text-sm text-muted-foreground">Найдено: {filtered.length}</p>
           <div className="flex items-center gap-2">
-            {/* Фильтры на мобайле — bottom-sheet */}
             <Sheet>
               <SheetTrigger className="inline-flex items-center gap-2 rounded-[var(--radius)] border border-border px-3 py-2 text-sm lg:hidden">
                 <SlidersHorizontal className="h-4 w-4" />
@@ -82,13 +91,18 @@ export function CatalogView({ products }: { products: Product[] }) {
 
             <SortSelect
               value={filters.sort}
-              onChange={(sort) => void setFilters({ sort, page: 1 })}
+              onChange={(sort) => void setFilters({ sort })}
             />
           </div>
         </div>
 
         <ProductGrid products={pageItems} />
-        <Pagination page={page} totalPages={totalPages} onPage={goToPage} />
+
+        {visible < filtered.length ? (
+          <div ref={sentinelRef} className="py-10 text-center text-sm text-muted-foreground">
+            Загружаем ещё…
+          </div>
+        ) : null}
       </div>
     </div>
   );

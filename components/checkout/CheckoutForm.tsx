@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SlotPicker } from "@/components/checkout/SlotPicker";
 import { ZoneNotice } from "@/components/checkout/ZoneNotice";
+import { DatePicker } from "@/components/checkout/DatePicker";
 import { checkoutSchema, type CheckoutValues } from "@/lib/validation/checkout";
 import {
   selectCartTotal,
@@ -26,6 +27,7 @@ const inputClass =
 
 /** Чекаут в 3 шага (спека §8). Адрес → resolveZone → способы и слот. */
 export function CheckoutForm() {
+  const router = useRouter();
   const hydrated = useHasHydrated();
   const lines = useCartStore((s) => s.lines);
   const total = useCartStore(selectCartTotal);
@@ -35,7 +37,6 @@ export function CheckoutForm() {
   const savedAddress = useZoneStore((s) => s.address);
 
   const [step, setStep] = useState(1);
-  const [orderId, setOrderId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
@@ -115,27 +116,13 @@ export function CheckoutForm() {
     });
     const data: unknown = await res.json();
     if (res.ok && typeof data === "object" && data && "orderId" in data) {
-      setOrderId(String((data as { orderId: string }).orderId));
+      const id = String((data as { orderId: string }).orderId);
       clear();
+      router.push(`/order/success?id=${encodeURIComponent(id)}`);
     } else {
       setSubmitError("Не удалось оформить заказ. Попробуйте ещё раз.");
     }
   });
-
-  if (orderId) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-16 text-center">
-        <CheckCircle2 className="h-14 w-14 text-accent" />
-        <h2 className="text-2xl font-semibold">Заказ оформлен</h2>
-        <p className="text-muted-foreground">
-          Номер заказа: <strong>{orderId}</strong>. Мы свяжемся для подтверждения.
-        </p>
-        <Link href="/">
-          <Button variant="outline">На главную</Button>
-        </Link>
-      </div>
-    );
-  }
 
   if (!hydrated) {
     return <p className="py-16 text-center text-muted-foreground">Загрузка…</p>;
@@ -266,13 +253,17 @@ export function CheckoutForm() {
               </fieldset>
             )}
 
-            <label className="grid gap-1 text-sm">
-              Дата
-              <input type="date" min={minDate} className={inputClass} {...register("date")} />
+            <div className="grid gap-1 text-sm">
+              <span>Дата</span>
+              <DatePicker
+                value={date}
+                min={new Date(minDate)}
+                onChange={(iso) => setValue("date", iso, { shouldValidate: true })}
+              />
               {errors.date ? (
                 <span className="text-xs text-accent">{errors.date.message}</span>
               ) : null}
-            </label>
+            </div>
 
             <div className="grid gap-1 text-sm">
               <span>Время</span>

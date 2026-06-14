@@ -60,6 +60,9 @@ h1, h2, .font-display {
 [data-category="rozhdenie"] { --category: #a855f7; }
 [data-category="gender-party"] { --category: #ff6b6b; }
 [data-category="lyubov"] { --category: #ff2d87; }
+[data-category="gelievye-shary"] { --category: #00c2ff; }
+[data-category="gotovye-nabory"] { --category: #a855f7; }
+[data-category="pirotehnika"] { --category: #ef4444; }
 
 .bg-category { background-color: var(--color-category); }
 .text-category { color: var(--color-category); }
