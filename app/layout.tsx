@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { LenisProvider } from "@/components/layout/LenisProvider";
+import { YandexMetrica } from "@/components/analytics/YandexMetrica";
+import { env } from "@/lib/env";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
     default: "Sharoduwi — гелиевые шары и праздничный декор",
     template: "%s · Sharoduwi",
   },
   description:
     "Гелиевые шары, готовые наборы на выписку и рождение, пиротехника. Доставка в день заказа по юго-востоку Московской области.",
+  openGraph: {
+    type: "website",
+    siteName: "Sharoduwi",
+    locale: "ru_RU",
+  },
 };
 
 export default function RootLayout({
@@ -18,9 +26,16 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground"
+        >
+          К содержимому
+        </a>
         <NuqsAdapter>
           <LenisProvider>{children}</LenisProvider>
         </NuqsAdapter>
+        <YandexMetrica />
       </body>
     </html>
   );

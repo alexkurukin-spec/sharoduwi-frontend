@@ -49,3 +49,17 @@ body {
   .animate-slide-in-left, .animate-slide-out-left,
   .animate-slide-in-bottom, .animate-slide-out-bottom { animation: none }
 }
+
+/* Морф грид→PDP (спека §7): мягкий кросс-фейд общих элементов. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
