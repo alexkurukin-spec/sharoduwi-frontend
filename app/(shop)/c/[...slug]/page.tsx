@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCategoryBySlug, getProductsByCategory } from "@/lib/shop/api";
 import { CatalogView } from "@/components/catalog/CatalogView";
+import { AgeGate } from "@/components/product/AgeGate";
 
 export const revalidate = 300; // ISR — спека §3
 
@@ -17,9 +18,13 @@ export default async function CategoryPage({
   if (!category) notFound();
 
   const { items } = await getProductsByCategory(category.id, 1, 1000);
+  // Age-gate на вход в категорию пиротехники (товары pickup_only).
+  const isPyro = items.length > 0 && items.every((p) => p.fulfillment === "pickup_only");
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
+      {isPyro ? <AgeGate /> : null}
+
       <nav className="mb-4 text-sm text-muted-foreground" aria-label="Хлебные крошки">
         <Link href="/" className="hover:text-foreground">
           Главная
