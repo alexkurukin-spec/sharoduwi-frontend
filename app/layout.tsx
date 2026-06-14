@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { LenisProvider } from "@/components/layout/LenisProvider";
 import "./globals.css";
 
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body>
-        <LenisProvider>{children}</LenisProvider>
+        <NuqsAdapter>
+          <LenisProvider>{children}</LenisProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

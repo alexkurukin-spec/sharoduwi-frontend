@@ -1,8 +1,11 @@
-import { getCategoryBySlug } from "@/lib/shop/api";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { getCategoryBySlug, getProductsByCategory } from "@/lib/shop/api";
+import { CatalogView } from "@/components/catalog/CatalogView";
 
-export const revalidate = 300;
+export const revalidate = 300; // ISR — спека §3
 
-// Плейсхолдер категории (фаза 2). Полный каталог — фаза 3.
+// RSC: отдаёт весь набор категории один раз; фильтрация/пагинация — на клиенте.
 export default async function CategoryPage({
   params,
 }: {
@@ -11,15 +14,25 @@ export default async function CategoryPage({
   const { slug } = await params;
   const leaf = slug[slug.length - 1] ?? "";
   const category = await getCategoryBySlug(leaf);
+  if (!category) notFound();
+
+  const { items } = await getProductsByCategory(category.id, 1, 1000);
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        {category?.title ?? "Категория"}
+    <main className="mx-auto max-w-6xl px-6 py-10">
+      <nav className="mb-4 text-sm text-muted-foreground" aria-label="Хлебные крошки">
+        <Link href="/" className="hover:text-foreground">
+          Главная
+        </Link>
+        <span className="px-1.5">/</span>
+        <span className="text-foreground">{category.title}</span>
+      </nav>
+
+      <h1 className="mb-8 text-3xl font-semibold tracking-tight">
+        {category.title}
       </h1>
-      <p className="mt-3 text-muted-foreground">
-        Каталог появится в фазе 3. Путь: /{slug.join("/")}
-      </p>
+
+      <CatalogView products={items} />
     </main>
   );
 }
