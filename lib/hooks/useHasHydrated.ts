@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/lib/store/cart";
 import { useZoneStore } from "@/lib/store/zone";
+import { useFavoritesStore } from "@/lib/store/favorites";
 
 // Регидрация persist-сторов запускается один раз на клиенте.
 let rehydrated: Promise<void> | null = null;
@@ -11,6 +12,7 @@ function rehydrateOnce(): Promise<void> {
     rehydrated = Promise.all([
       Promise.resolve(useCartStore.persist.rehydrate()),
       Promise.resolve(useZoneStore.persist.rehydrate()),
+      Promise.resolve(useFavoritesStore.persist.rehydrate()),
     ]).then(() => undefined);
   }
   return rehydrated;

@@ -1,17 +1,32 @@
 @import "tailwindcss";
 
-/* Сдержанная палитра: фон + 1-2 акцента (спека §0). «Радугу» дают фото шаров, не UI. */
+/* Full Palette (аддон): праздник на светлом фоне. Яркость — насыщенными акцентами
+   и цветными секциями, не серостью. */
 @theme {
-  --color-background: oklch(0.99 0.005 95);
-  --color-foreground: oklch(0.22 0.02 280);
-  --color-muted: oklch(0.96 0.008 95);
-  --color-muted-foreground: oklch(0.5 0.02 280);
-  --color-accent: oklch(0.62 0.18 12); /* тёплый коралл — основной акцент */
-  --color-accent-foreground: oklch(0.99 0.005 95);
-  --color-border: oklch(0.9 0.01 280);
+  --color-background: #ffffff; /* чистый белый — контраст для фото шаров */
+  --color-foreground: #1a1a2e; /* почти чёрный с синим оттенком */
+  --color-muted: #f7f7fb;
+  --color-muted-foreground: #6b7280;
+  --color-border: #f0f0f0;
 
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --radius: 0.75rem;
+  /* Фоны секций (чередование) */
+  --color-section-pink: #fff5fb;
+  --color-section-blue: #f0f9ff;
+
+  /* Акценты */
+  --color-accent: #ff2d87; /* hot pink — главный CTA, теги */
+  --color-accent-foreground: #ffffff;
+  --color-sun: #ffb800; /* солнечный жёлтый — цена, badges */
+  --color-sky: #00c2ff; /* sky blue — ссылки, иконки */
+  --color-violet: #a855f7; /* свадьба/выпускной */
+  --color-grass: #22c55e; /* в наличии, скидки */
+
+  /* Категорийный акцент (--accent через data-category, см. ниже) */
+  --color-category: var(--category, #ff2d87);
+
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), var(--font-manrope), system-ui, sans-serif;
+  --radius: 0.875rem;
 }
 
 * {
@@ -21,8 +36,34 @@
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+
+/* Заголовки — Unbounded, сверхжирный. */
+h1, h2, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Категорийный акцент: data-category на элементе задаёт --category,
+   а утилиты ниже подхватывают его (wow-фича №1 аддона). */
+[data-category="den-rozhdeniya"] { --category: #ff6b6b; }
+[data-category="svadba"] { --category: #f472b6; }
+[data-category="novyy-god"] { --category: #22c55e; }
+[data-category="vypusknoy"] { --category: #ffb800; }
+[data-category="23-fevralya"] { --category: #3b82f6; }
+[data-category="8-marta"] { --category: #ff2d87; }
+[data-category="detskiy"] { --category: #a855f7; }
+[data-category="korporativ"] { --category: #06b6d4; }
+[data-category="vypiska"] { --category: #00c2ff; }
+[data-category="rozhdenie"] { --category: #a855f7; }
+[data-category="gender-party"] { --category: #ff6b6b; }
+[data-category="lyubov"] { --category: #ff2d87; }
+
+.bg-category { background-color: var(--color-category); }
+.text-category { color: var(--color-category); }
+.border-category { border-color: var(--color-category); }
 
 /* Анимации дровера/оверлея — чистый CSS (бюджет §7). */
 @keyframes overlay-in { from { opacity: 0 } to { opacity: 1 } }

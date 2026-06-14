@@ -1,9 +1,23 @@
 import type { Metadata } from "next";
+import { Manrope, Unbounded } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { LenisProvider } from "@/components/layout/LenisProvider";
 import { YandexMetrica } from "@/components/analytics/YandexMetrica";
 import { env } from "@/lib/env";
 import "./globals.css";
+
+const manrope = Manrope({
+  subsets: ["cyrillic", "latin"],
+  display: "swap",
+  variable: "--font-manrope",
+});
+
+const unbounded = Unbounded({
+  subsets: ["cyrillic", "latin"],
+  display: "swap",
+  weight: ["700", "800", "900"],
+  variable: "--font-unbounded",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
@@ -24,7 +38,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={`${manrope.variable} ${unbounded.variable}`}>
       <body>
         <a
           href="#main"
